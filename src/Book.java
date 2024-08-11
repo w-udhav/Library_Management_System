@@ -1,8 +1,12 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Book {
     private String title;
     private String author;
     private String isbn;
     private Boolean isBorrowed;
+    private List<Member> waitlist = new ArrayList<>();
 
     public Book(String title, String author, String isbn) {
         this.title = title;
@@ -24,11 +28,22 @@ public class Book {
         return isBorrowed;
     }
 
+    public void addToWaitlist(Member member) {
+        waitlist.add(member);
+    }
+
+    public void notifyWaitlist() {
+        for (Member member : waitlist) {
+            System.out.println("Notification: " + member.getName() + ", the book " + title + " is now available.");
+        }
+    }
+
     public void borrowBook() {
         this.isBorrowed = true;
     }
     public void returnBook() {
         this.isBorrowed = false;
+        notifyWaitlist();
     }
 
     @Override

@@ -4,6 +4,7 @@ import java.util.List;
 // Singleton Pattern
 public class Library {
     private static Library instance = null;
+    private SearchStrategy searchStrategy;
     private LibraryFactory factory;
     private List<Book> books;
     private List<Member> members;
@@ -19,6 +20,14 @@ public class Library {
             instance = new Library();
         }
         return instance;
+    }
+
+    public void setSearchStrategy(SearchStrategy searchStrategy) {
+        this.searchStrategy = searchStrategy;
+    }
+
+    public List<Book> searchBooks(String query) {
+        return searchStrategy.search(books, query);
     }
 
     // Methods to add books and members
@@ -48,6 +57,16 @@ public class Library {
 
         if (book != null && member != null) {
             member.returnBook(book);
+            book.notifyWaitlist();
+        }
+    }
+
+    public void addToWaitlist(String isbn, String memberId) {
+        Book book = findBookByIsbn(isbn);
+        Member member = findMemberById(memberId);
+
+        if (book != null && member != null) {
+            book.addToWaitlist(member);
         }
     }
 
@@ -66,6 +85,34 @@ public class Library {
         }
         System.out.println("Member not found.");
         return null;
+    }
+
+    public List<Book> searchBooksByTitle(String title) {
+        List<Book> results = new ArrayList<>();
+        for (Book book : books) {
+            if (book.getTitle().equalsIgnoreCase(title)) {
+                results.add(book);
+            }
+        }
+        return results;
+    }
+
+    public List<Book> searchBooksByAuthor(String author) {
+        List<Book> results = new ArrayList<>();
+        for (Book book : books) {
+            if (book.getAuthor().equalsIgnoreCase(author)) {
+                results.add(book);
+            }
+        }
+        return results;
+    }
+
+    public List<Book> listAvailableBooks() {
+        List<Book> res = new ArrayList<>();
+        for (Book book : books) {
+            if (!book.isBorrowed()) res.add(book);
+        }
+        return res;
     }
 
     @Override
